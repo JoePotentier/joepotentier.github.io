@@ -4,6 +4,10 @@ node_modules
 /.svelte
 /.svelte-kit
 /build
+
+# temp
+/public
+
 /functions
 /.vercel_build_output
 /workers-site

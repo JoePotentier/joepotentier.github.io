@@ -29,72 +29,72 @@ const pkg = customRequire('./package.json');
 
 const options = JSON.stringify(process.env.OPTIONS || '{}');
 
-const getAdapters = (adapt) => {
-	switch (adapt) {
-		case 'node':
-			return nodeAdapter;
-		case 'static':
-			return staticAdapter;
-		case 'netlify':
-			return netlifyAdapter;
-		case 'vercel':
-			return vercelAdapter;
-		default:
-			return nodeAdapter;
-	}
+const getAdapters = adapt => {
+  switch (adapt) {
+    case 'node':
+      return nodeAdapter;
+    case 'static':
+      return staticAdapter;
+    case 'netlify':
+      return netlifyAdapter;
+    case 'vercel':
+      return vercelAdapter;
+    default:
+      return nodeAdapter;
+  }
 };
 
 const adapter = getAdapters(adapt);
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-	preprocess: [
-		sveltePreprocess({
-			defaults: {
-				style: 'scss',
-			},
-			postcss: true,
-			scss: {
-				prependData: `@import 'src/styles/variables/index.scss';`,
-				outputStyle: 'compressed',
-			},
-		}),
-	],
-	kit: {
-		ssr: isSSR,
-		amp: isAMP,
-		target: '#starter',
-		prerender: {
-			crawl: true,
-			enabled: true,
-			force: true,
-			pages: ['*'],
-		},
-		vite: () => ({
-			ssr: {
-				noExternal: [...Object.keys(pkg.dependencies || {})],
-			},
-			resolve: {
-				alias: {
-					$components: resolve(__dirname, './src/lib/shared/components'),
-					$ui: resolve(__dirname, './src/lib/shared/ui'),
-					$shared: resolve(__dirname, './src/lib/shared'),
-					$models: resolve(__dirname, './src/lib/models'),
-					$data: resolve(__dirname, './src/lib/data'),
-					$core: resolve(__dirname, './src/lib/core'),
-					$utils: resolve(__dirname, './src/lib/utils'),
-					$environment: resolve(__dirname, './src/environments'),
-				},
-			},
-			optimizeDeps: {
-				include: ['detect-node', 'broadcast-channel'],
-			},
-		}),
-	},
+  preprocess: [
+    sveltePreprocess({
+      defaults: {
+        style: 'scss',
+      },
+      postcss: true,
+      scss: {
+        prependData: `@import 'src/styles/variables/index.scss';`,
+        outputStyle: 'compressed',
+      },
+    }),
+  ],
+  kit: {
+    ssr: isSSR,
+    amp: isAMP,
+    target: '#starter',
+    prerender: {
+      crawl: true,
+      enabled: true,
+      force: true,
+      pages: ['*'],
+    },
+    vite: () => ({
+      ssr: {
+        noExternal: [...Object.keys(pkg.dependencies || {})],
+      },
+      resolve: {
+        alias: {
+          $components: resolve(__dirname, './src/lib/shared/components'),
+          $ui: resolve(__dirname, './src/lib/shared/ui'),
+          $shared: resolve(__dirname, './src/lib/shared'),
+          $models: resolve(__dirname, './src/lib/models'),
+          $data: resolve(__dirname, './src/lib/data'),
+          $core: resolve(__dirname, './src/lib/core'),
+          $utils: resolve(__dirname, './src/lib/utils'),
+          $environment: resolve(__dirname, './src/environments'),
+        },
+      },
+      optimizeDeps: {
+        include: ['detect-node', 'broadcast-channel'],
+      },
+    }),
+  },
 };
 
 if (hasAdapter) {
-	config.kit.adapter = adapter(options);
+  config.kit.adapter = adapter({ pages: 'public', assets: 'public' });
 }
 
 export default config;
